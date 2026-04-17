@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DGIP Admin — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0F1B3D 0%, #192D63 50%, #2A4080 100%); }
+    .login-card { background: #fff; border-radius: 16px; padding: 48px 40px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .login-card h1 { font-family: 'Outfit', sans-serif; color: #192D63; font-size: 1.5rem; text-align: center; margin-bottom: 8px; }
+    .login-card p { color: #666; text-align: center; margin-bottom: 32px; font-size: 0.9rem; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: 500; color: #333; margin-bottom: 6px; font-size: 0.875rem; }
+    .form-group input { width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 1rem; transition: border-color 0.3s; font-family: 'Inter', sans-serif; }
+    .form-group input:focus { outline: none; border-color: #192D63; }
+    .btn-login { width: 100%; padding: 14px; background: linear-gradient(135deg, #192D63, #2A4080); color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; font-family: 'Inter', sans-serif; }
+    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(25,45,99,0.4); }
+    .error-msg { background: #fee2e2; color: #dc2626; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 0.875rem; text-align: center; }
+    .gold-line { width: 60px; height: 3px; background: #D4B012; margin: 0 auto 24px; border-radius: 2px; }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <h1>Portal DGIP — UNACH</h1>
+    <div class="gold-line"></div>
+    <p>Panel de administración</p>
+    <% if (error && error.length) { %>
+      <div class="error-msg"><%= error %></div>
+    <% } %>
+    <form method="POST" action="/admin/login">
+      <div class="form-group">
+        <label for="username">Usuario</label>
+        <input type="text" id="username" name="username" required autocomplete="username" placeholder="Ingresa tu usuario">
+      </div>
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Ingresa tu contraseña">
+      </div>
+      <button type="submit" class="btn-login">Iniciar Sesión</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<%- include('../header', { 
+  pageTitle: (mode === 'edit' ? 'Editar' : 'Nuevo') + ' Artículo',
+  extraHead: '<link rel="stylesheet" href="/admin/assets/editor.css">'
+}) %>
+
+<div class="editor-header">
+  <a href="/admin/posts" class="btn btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Volver</a>
+</div>
+
+<form method="POST" action="/admin/posts/<%= mode === 'edit' ? post.id + '/edit' : 'new' %>" enctype="multipart/form-data" id="postForm">
+  <div class="editor-grid" style="display:grid; grid-template-columns: 1fr 300px; gap: 24px; margin-top: 20px;">
+    <div class="editor-main">
+      <div class="card">
+        <div class="form-group">
+          <label for="title">Título</label>
+          <input type="text" id="title" name="title" required value="<%= post ? post.title : '' %>" style="font-size:1.1rem;font-weight:600;">
+        </div>
+        <div class="form-group">
+          <label for="excerpt">Extracto / Bajada</label>
+          <textarea id="excerpt" name="excerpt" rows="2" placeholder="Breve descripción para la grilla..."><%= post ? post.excerpt || '' : '' %></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h3 style="margin-bottom:0;">Contenido</h3>
+          <div style="font-size:0.75rem; color:var(--gray);">Tip: Usa el toolbar para dar formato</div>
+        </div>
+        
+        <div class="editor-toolbar">
+          <button type="button" class="toolbar-btn" title="Negrita" onclick="execCmd('bold')"><i class="fas fa-bold"></i></button>
+          <button type="button" class="toolbar-btn" title="Itálica" onclick="execCmd('italic')"><i class="fas fa-italic"></i></button>
+          <button type="button" class="toolbar-btn" title="Subrayado" onclick="execCmd('underline')"><i class="fas fa-underline"></i></button>
+          <div class="toolbar-sep"></div>
+          <button type="button" class="toolbar-btn" title="Título 2" onclick="execCmd('formatBlock','<h2>')">H2</button>
+          <button type="button" class="toolbar-btn" title="Título 3" onclick="execCmd('formatBlock','<h3>')">H3</button>
+          <button type="button" class="toolbar-btn" title="Cita" onclick="execCmd('formatBlock','<blockquote>')"><i class="fas fa-quote-right"></i></button>
+          <div class="toolbar-sep"></div>
+          <button type="button" class="toolbar-btn" title="Lista" onclick="execCmd('insertUnorderedList')"><i class="fas fa-list-ul"></i></button>
+          <button type="button" class="toolbar-btn" title="Enlace" onclick="insertLink()"><i class="fas fa-link"></i></button>
+          <button type="button" class="toolbar-btn" title="Imagen" onclick="openMediaModal()"><i class="fas fa-image"></i></button>
+          <button type="button" class="toolbar-btn" title="Video" onclick="insertEmbed()"><i class="fas fa-video"></i></button>
+        </div>
+
+        <div class="editor-content" contenteditable="true" id="editor" style="min-height:400px; border:1px solid #e2e8f0; padding:20px; border-radius:0 0 8px 8px; background:#fff; overflow-y:auto;">
+          <%- post ? post.content : '<p>Empieza a escribir tu gran artículo científico...</p>' %>
+        </div>
+        <input type="hidden" name="content" id="contentInput">
+      </div>
+    </div>
+
+    <div class="editor-sidebar">
+      <div class="card">
+        <h3>Publicación</h3>
+        <div class="form-group">
+          <label>Estado</label>
+          <select name="status">
+            <option value="draft" <%= post && post.status==='draft'?'selected':'' %>>Borrador</option>
+            <option value="published" <%= post && post.status==='published'?'selected':'' %>>Publicado</option>
+            <option value="featured" <%= post && post.status==='featured'?'selected':'' %>>Destacado</option>
+            <option value="archived" <%= post && post.status==='archived'?'selected':'' %>>Archivado</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Categoría</label>
+          <select name="category_id">
+            <option value="">Sin categoría</option>
+            <% categories.forEach(c => { %>
+              <option value="<%= c.id %>" <%= post && post.category_id===c.id?'selected':'' %>><%= c.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;">
+          <i class="fas fa-save"></i> <%= mode === 'edit' ? 'Actualizar' : 'Publicar' %>
+        </button>
+      </div>
+
+      <div class="card" style="margin-top:20px;">
+        <h3>Imagen de Portada</h3>
+        <div class="cover-drop-zone" style="border:2px dashed #e2e8f0; padding:20px; border-radius:12px; text-align:center;">
+          <% if (post && post.cover_image) { %>
+            <img src="<%= post.cover_image %>" id="coverPreview" style="width:100%; border-radius:8px; margin-bottom:12px;">
+          <% } else { %>
+            <div id="noCover" style="margin-bottom:12px; color:#94a3b8;"><i class="fas fa-cloud-upload-alt fa-2x"></i></div>
+          <% } %>
+          <input type="file" name="cover_image" id="coverInput" accept="image/*" style="width:100%; font-size:0.75rem;">
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- Media Picker Modal -->
+<div class="modal-overlay" id="mediaModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+  <div class="card" style="max-width:800px; width:90%; max-height:80vh; overflow-y:auto; position:relative;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="margin:0;">Seleccionar Imagen</h2>
+      <button type="button" onclick="closeMediaModal()" class="btn btn-outline btn-sm"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="media-grid" id="mediaGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:12px;">
+      <p>Cargando media...</p>
+    </div>
+  </div>
+</div>
+
+<script src="/admin/assets/editor.js"></script>
+
+<%- include('../footer') %>

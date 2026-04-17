@@ -1,0 +1,55 @@
+<% var pageTitle = 'Biblioteca de Media'; %>
+<%- include('../layout', { pageTitle, topActions: '', body: '' }) %>
+<script>
+document.querySelector('.content-area').innerHTML += `
+<div class="card">
+  <div class="card-header">
+    <h3>Archivos</h3>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <select onchange="location.href='/admin/media?type='+this.value" class="btn btn-outline btn-sm" style="font-size:0.8rem;">
+        <option value="" ${!'<%= filter %>' || '<%= filter %>'==='all' ? 'selected':''}>Todos</option>
+        <option value="image" ${'<%= filter %>'==='image'?'selected':''}>Imágenes</option>
+        <option value="video" ${'<%= filter %>'==='video'?'selected':''}>Videos</option>
+        <option value="pdf" ${'<%= filter %>'==='pdf'?'selected':''}>PDFs</option>
+      </select>
+    </div>
+  </div>
+  <!-- Upload area -->
+  <form method="POST" action="/admin/media/upload" enctype="multipart/form-data" style="margin-bottom:24px;">
+    <div style="border:2px dashed #d1d5db;border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:border-color 0.3s;" 
+         ondragover="this.style.borderColor='#192D63';event.preventDefault();" 
+         ondragleave="this.style.borderColor='#d1d5db';"
+         onclick="this.querySelector('input').click();">
+      <i class="fas fa-cloud-upload-alt" style="font-size:2rem;color:#94a3b8;margin-bottom:8px;display:block;"></i>
+      <p style="color:#64748b;margin-bottom:8px;">Arrastra archivos aquí o haz clic para seleccionar</p>
+      <p style="color:#94a3b8;font-size:0.8rem;">Imágenes, Videos, PDFs — Máx 50MB</p>
+      <input type="file" name="files" multiple accept="image/*,video/*,.pdf" style="display:none;" onchange="this.form.submit();">
+    </div>
+  </form>
+  <!-- Media grid -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;">
+    <% media.forEach(m => { %>
+    <div style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06);transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+      <% if (m.mime_type && m.mime_type.startsWith('image/')) { %>
+        <img src="<%= m.thumbnail_path || m.path %>" style="width:100%;height:120px;object-fit:cover;" alt="<%= m.alt_text || m.original_name %>">
+      <% } else if (m.mime_type && m.mime_type.startsWith('video/')) { %>
+        <div style="width:100%;height:120px;background:#0F1B3D;display:flex;align-items:center;justify-content:center;color:#D4B012;font-size:2rem;"><i class="fas fa-play-circle"></i></div>
+      <% } else { %>
+        <div style="width:100%;height:120px;background:#f8fafc;display:flex;align-items:center;justify-content:center;color:#dc2626;font-size:2rem;"><i class="fas fa-file-pdf"></i></div>
+      <% } %>
+      <div style="padding:10px;">
+        <p style="font-size:0.75rem;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="<%= m.original_name %>"><%= m.original_name %></p>
+        <p style="font-size:0.7rem;color:#94a3b8;"><%= (m.size / 1024).toFixed(0) %> KB</p>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button onclick="navigator.clipboard.writeText('<%= m.path %>');this.textContent='✓'" class="btn btn-outline btn-sm" style="flex:1;font-size:0.7rem;padding:4px;">Copiar URL</button>
+          <form method="POST" action="/admin/media/<%= m.id %>/delete" onsubmit="return confirm('¿Eliminar?')" style="display:inline;">
+            <button class="btn btn-danger btn-sm" style="font-size:0.7rem;padding:4px 8px;"><i class="fas fa-trash"></i></button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</div>
+`;
+</script>

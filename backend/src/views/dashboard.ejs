@@ -1,0 +1,53 @@
+<%- include('header', { pageTitle: 'Dashboard' }) %>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fas fa-newspaper"></i></div>
+    <div class="stat-value"><%= stats.totalPosts %></div>
+    <div class="stat-label">Total Artículos</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+    <div class="stat-value"><%= stats.publishedPosts %></div>
+    <div class="stat-label">Publicados</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon gold"><i class="fas fa-star"></i></div>
+    <div class="stat-value"><%= stats.featuredPosts %></div>
+    <div class="stat-label">Destacados</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fas fa-tags"></i></div>
+    <div class="stat-value"><%= stats.totalCategories %></div>
+    <div class="stat-label">Categorías</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon gold"><i class="fas fa-photo-video"></i></div>
+    <div class="stat-value"><%= stats.totalMedia %></div>
+    <div class="stat-label">Archivos Media</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>Artículos Recientes</h3>
+    <a href="/admin/posts/new" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nuevo</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Título</th><th>Categoría</th><th>Estado</th><th>Fecha</th></tr></thead>
+      <tbody>
+      <% recentPosts.forEach(p => { %>
+        <tr>
+          <td><a href="/admin/posts/<%= p.id %>/edit" style="color:#192D63;font-weight:500;text-decoration:none;"><%= p.title.substring(0,60) %><%= p.title.length > 60 ? '...' : '' %></a></td>
+          <td><%= p.category ? p.category.name : '—' %></td>
+          <td><span class="badge badge-<%= p.status %>"><%= p.status %></span></td>
+          <td style="color:#64748b;font-size:0.85rem;"><%= p.created_at ? new Date(p.created_at).toLocaleDateString('es-MX') : '—' %></td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('footer') %>

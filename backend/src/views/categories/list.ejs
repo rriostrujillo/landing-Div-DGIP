@@ -1,0 +1,40 @@
+<% var pageTitle = 'Categorías'; %>
+<%- include('../layout', { pageTitle, topActions: '', body: '' }) %>
+<script>
+document.querySelector('.content-area').innerHTML += `
+<div class="card">
+  <div class="card-header">
+    <h3>Categorías</h3>
+    <button onclick="document.getElementById('newCatForm').style.display='block'" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nueva</button>
+  </div>
+  <div id="newCatForm" style="display:none;margin-bottom:20px;padding:16px;background:#f8fafc;border-radius:8px;">
+    <form method="POST" action="/admin/categories/new" style="display:flex;gap:12px;align-items:end;flex-wrap:wrap;">
+      <div class="form-group" style="margin:0;flex:1;min-width:200px;"><label>Nombre</label><input name="name" required></div>
+      <div class="form-group" style="margin:0;width:100px;"><label>Color</label><input type="color" name="color" value="#192D63" style="height:38px;padding:2px;"></div>
+      <div class="form-group" style="margin:0;flex:1;min-width:200px;"><label>Descripción</label><input name="description"></div>
+      <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-check"></i> Crear</button>
+    </form>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Color</th><th>Nombre</th><th>Slug</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody>
+      <% categories.forEach(c => { %>
+        <tr>
+          <td><div style="width:24px;height:24px;border-radius:6px;background:<%= c.color %>;"></div></td>
+          <td style="font-weight:500;"><%= c.name %></td>
+          <td style="color:#64748b;"><%= c.slug %></td>
+          <td><span class="badge <%= c.is_active ? 'badge-published' : 'badge-archived' %>"><%= c.is_active ? 'Activa' : 'Inactiva' %></span></td>
+          <td>
+            <form method="POST" action="/admin/categories/<%= c.id %>/delete" style="display:inline;" onsubmit="return confirm('¿Eliminar?')">
+              <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+`;
+</script>

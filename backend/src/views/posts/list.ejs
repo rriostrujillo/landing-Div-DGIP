@@ -1,0 +1,54 @@
+<%- include('../header', { pageTitle: 'Artículos', topActions: '<a href="/admin/posts/new" class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo Artículo</a>' }) %>
+
+<div class="card">
+  <div class="card-header">
+    <h3>Todos los Artículos</h3>
+    <div style="display:flex;gap:8px;">
+      <select id="filterStatus" class="btn btn-outline btn-sm" onchange="filterPosts()" style="font-size:0.8rem;">
+        <option value="">Todos</option>
+        <option value="draft">Borrador</option>
+        <option value="published">Publicado</option>
+        <option value="featured">Destacado</option>
+        <option value="archived">Archivado</option>
+      </select>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Imagen</th><th>Título</th><th>Categoría</th><th>Autor</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr></thead>
+      <tbody>
+      <% posts.forEach(p => { %>
+        <tr>
+          <td>
+            <% if (p.cover_image) { %>
+              <img src="<%= p.cover_image %>" style="width:60px;height:40px;object-fit:cover;border-radius:6px;">
+            <% } else { %>
+              <div style="width:60px;height:40px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#94a3b8;"><i class="fas fa-image"></i></div>
+            <% } %>
+          </td>
+          <td><a href="/admin/posts/<%= p.id %>/edit" style="color:#192D63;font-weight:500;text-decoration:none;"><%= p.title.substring(0,50) %><%= p.title.length > 50 ? '...' : '' %></a></td>
+          <td><% if (p.category) { %><span style="color:<%= p.category.color %>;font-weight:500;"><%= p.category.name %></span><% } else { %>—<% } %></td>
+          <td style="color:#64748b;"><%= p.author ? p.author.full_name : '—' %></td>
+          <td><span class="badge badge-<%= p.status %>"><%= p.status %></span></td>
+          <td style="color:#64748b;font-size:0.85rem;"><%= p.created_at ? new Date(p.created_at).toLocaleDateString('es-MX') : '—' %></td>
+          <td>
+            <a href="/admin/posts/<%= p.id %>/edit" class="btn btn-outline btn-sm"><i class="fas fa-edit"></i></a>
+            <form method="POST" action="/admin/posts/<%= p.id %>/delete" style="display:inline;" onsubmit="return confirm('¿Eliminar este artículo?')">
+              <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function filterPosts() {
+  const status = document.getElementById('filterStatus').value;
+  window.location.href = '/admin/posts' + (status ? '?status=' + status : '');
+}
+</script>
+
+<%- include('../footer') %>
