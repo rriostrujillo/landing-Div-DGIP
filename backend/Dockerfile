@@ -11,7 +11,8 @@ RUN npm ci --only=production
 # Copy source
 COPY src/ ./src/
 COPY public/ ./public/
-COPY .env ./
+COPY docs/ ./docs/
+COPY .env.production ./.env
 
 # Create uploads directory
 RUN mkdir -p uploads
