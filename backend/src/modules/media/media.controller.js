@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs');
-const sharp = require('sharp');
 const { Media } = require('../../models');
 const { UPLOAD_DIR } = require('../../config/upload');
 
@@ -34,17 +33,8 @@ exports.uploadMedia = async (req, res) => {
     const uploaded = [];
 
     for (const file of files) {
-      let thumbnailPath = null;
-
-      // Generate thumbnail for images
-      if (file.mimetype.startsWith('image/') && !file.mimetype.includes('svg')) {
-        const thumbName = `thumb_${file.filename}`;
-        thumbnailPath = path.join('uploads', thumbName);
-        await sharp(file.path)
-          .resize(400, 300, { fit: 'cover' })
-          .jpeg({ quality: 80 })
-          .toFile(path.join(UPLOAD_DIR, thumbName));
-      }
+      // Store original image as thumbnail (no processing)
+      const thumbnailPath = file.mimetype.startsWith('image/') ? `/uploads/${file.filename}` : null;
 
       const media = await Media.create({
         filename: file.filename,
