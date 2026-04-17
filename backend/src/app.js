@@ -81,9 +81,9 @@ app.use('/admin/media', mediaRoutes);
 // ===== FRONTEND (serve static) =====
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/uploads', express.static(process.env.UPLOAD_DIR || path.join(__dirname, '../uploads')));
-app.use('/', express.static(path.join(__dirname, '../../frontend')));
+app.use('/', express.static(path.join(__dirname, '../../docs')));
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', '..', 'frontend', 'index.html'));
+  res.sendFile(path.join(__dirname, '..', '..', 'docs', 'index.html'));
 });
 
 // Start server
