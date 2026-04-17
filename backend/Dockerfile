@@ -2,17 +2,17 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package files from backend folder
+COPY backend/package*.json ./
 
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy source
-COPY src/ ./src/
-COPY public/ ./public/
+# Copy source from backend folder
+COPY backend/src/ ./src/
+COPY backend/public/ ./public/
 COPY docs/ ./docs/
-COPY .env.production ./.env
+COPY backend/.env.production ./.env
 
 # Create uploads directory
 RUN mkdir -p uploads
