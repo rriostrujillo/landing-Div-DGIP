@@ -1,7 +1,6 @@
 [build]
 builder = "docker"
-builder = "nixpacks"
-dockerfile = "Dockerfile"
+dockerfile = "backend/Dockerfile"
 
 [deploy]
 numReplicas = 1
