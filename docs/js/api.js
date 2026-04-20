@@ -1,10 +1,11 @@
-// API client for DGIP Portal
+// API client for UNACH Portal
 const API_BASE = '/api';
 
 const Api = {
-  async getFeatured() {
+  async getFeatured(params = {}) {
     try {
-      const res = await fetch(`${API_BASE}/posts/featured`);
+      const query = new URLSearchParams(params).toString();
+      const res = await fetch(`${API_BASE}/posts/featured?${query}`);
       if (!res.ok) throw new Error('Failed to fetch featured');
       return await res.json();
     } catch (err) {
@@ -47,6 +48,22 @@ const Api = {
     }
   },
 
+  async getLayout() {
+    try {
+      const res = await fetch(`${API_BASE}/layout`);
+      if (!res.ok) throw new Error('Failed to fetch layout');
+      return await res.json();
+    } catch (err) {
+      console.warn('API: Layout fetch failed, using default');
+      return [
+        { type: 'hero_slider', config: { limit: 5 } },
+        { type: 'separator', config: { icon: 'fas fa-flask', text: 'Divulgación del Conocimiento', sub: 'Investigación · Innovación · Ciencia' } },
+        { type: 'articles_feed', config: { limit: 9, layout: 'grid' } },
+        { type: 'banner_horizontal', config: { title: 'Construyendo el futuro a través de la ciencia', text: 'La Dirección General de Investigación y Posgrado...', button_text: 'Conoce más', button_link: '#' } }
+      ];
+    }
+  },
+
   // Demo data when API is not available
   _demoFeatured() {
     return [
@@ -82,7 +99,7 @@ const Api = {
       excerpt: 'La Dirección General de Investigación y Posgrado impulsa el desarrollo científico y tecnológico al servicio de la comunidad universitaria y la sociedad chiapaneca.',
       cover_image: null,
       category: cats[i % cats.length],
-      author: { full_name: 'DGIP UNACH' },
+      author: { full_name: 'UNACH' },
       published_at: new Date(2026, 3, 15 - i).toISOString()
     }));
   }

@@ -1,0 +1,44 @@
+<%- include('../header', { pageTitle: 'Gestión de Portada' }) %>
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+  <p style="color:var(--gray);">Organiza los módulos que aparecen en la página de inicio (Joomla style).</p>
+  <a href="/admin/layout/new" class="btn btn-primary"><i class="fas fa-plus"></i> Añadir Módulo</a>
+</div>
+
+<div class="card">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Orden</th>
+        <th>Título</th>
+        <th>Tipo</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% sections.forEach(s => { %>
+        <tr>
+          <td><span class="badge"><%= s.sort_order %></span></td>
+          <td><strong><%= s.title %></strong></td>
+          <td><code><%= s.type %></code></td>
+          <td>
+            <span class="badge <%= s.is_active ? 'badge-success' : 'badge-danger' %>">
+              <%= s.is_active ? 'Activo' : 'Inactivo' %>
+            </span>
+          </td>
+          <td>
+            <div style="display:flex; gap:8px;">
+              <a href="/admin/layout/<%= s.id %>/edit" class="btn btn-sm btn-outline"><i class="fas fa-edit"></i></a>
+              <form action="/admin/layout/<%= s.id %>/delete" method="POST" onsubmit="return confirm('¿Eliminar este módulo?')">
+                <button class="btn btn-sm btn-outline" style="color:var(--danger); border-color:var(--danger);"><i class="fas fa-trash"></i></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../footer') %>

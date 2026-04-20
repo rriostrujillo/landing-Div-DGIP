@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal de Divulgación de la Ciencia — DGIP UNACH</title>
-  <meta name="description" content="Portal de divulgación científica de la Dirección General de Investigación y Posgrado de la Universidad Autónoma de Chiapas">
+  <title>UNACH, divulgación de la ciencia y el conocimiento</title>
+  <meta name="description" content="Portal de divulgación científica y del conocimiento de la Universidad Autónoma de Chiapas">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -20,19 +20,19 @@
     <div class="header-inner">
       <a href="/" class="header-logo" id="headerLogo">
         <div class="logo-icon">
-          <i class="fas fa-atom"></i>
+          <img src="img/logo-unach-white.png" alt="Logo UNACH">
         </div>
         <div class="logo-text">
-          <span class="logo-title">DGIP</span>
-          <span class="logo-subtitle">Divulgación de la Ciencia</span>
+          <span class="logo-title">UNACH</span>
+          <span class="logo-subtitle">Divulgación de la Ciencia y el Conocimiento</span>
         </div>
       </a>
       <nav class="header-nav" id="headerNav">
         <a href="/" class="nav-link active">Inicio</a>
         <a href="#articulos" class="nav-link">Artículos</a>
         <a href="#categorias" class="nav-link">Categorías</a>
-        <a href="http://www.dgip.unach.mx" class="nav-link" target="_blank">DGIP</a>
         <a href="https://www.unach.mx" class="nav-link" target="_blank">UNACH</a>
+        <a href="http://www.dgip.unach.mx" class="nav-link" target="_blank">DGIP</a>
       </nav>
       <button class="mobile-toggle" id="mobileToggle" aria-label="Abrir menú">
         <span></span><span></span><span></span>
@@ -40,86 +40,26 @@
     </div>
   </header>
 
-  <!-- ========== HERO SLIDER ========== -->
-  <section class="hero-slider" id="heroSlider" aria-label="Artículos destacados">
-    <div class="slider-track" id="sliderTrack">
-      <!-- Slides populated by JS -->
-      <div class="slide active" style="background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%221920%22 height=%22700%22><rect fill=%22%23192D63%22 width=%221920%22 height=%22700%22/></svg>')">
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <span class="slide-category">Cargando...</span>
-          <h2 class="slide-title">Portal de Divulgación de la Ciencia</h2>
-          <p class="slide-excerpt">Descubre las últimas investigaciones y avances científicos de la UNACH</p>
-        </div>
-      </div>
+   <!-- ========== DYNAMIC CONTENT MODULES ========== -->
+  <main id="mainModules">
+    <div id="moduleHero"></div>
+    <div id="globalFilters" class="global-filters-bar"></div>
+    <div class="layout-container">
+      <aside id="leftSidebar" class="sidebar-column left-sidebar"></aside>
+      <div id="moduleContainer" class="main-column"></div>
+      <aside id="rightSidebar" class="sidebar-column right-sidebar"></aside>
     </div>
-    <div class="slider-controls">
-      <button class="slider-arrow slider-prev" id="sliderPrev" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
-      <div class="slider-dots" id="sliderDots"></div>
-      <button class="slider-arrow slider-next" id="sliderNext" aria-label="Siguiente"><i class="fas fa-chevron-right"></i></button>
-    </div>
-    <div class="slider-progress" id="sliderProgress"></div>
-  </section>
-
-  <!-- ========== TRANSITION SEPARATOR ========== -->
-  <section class="section-separator" id="separator1">
-    <div class="separator-inner">
-      <div class="separator-line"></div>
-      <div class="separator-content">
-        <span class="separator-icon"><i class="fas fa-flask"></i></span>
-        <h2 class="separator-text">Divulgación del Conocimiento</h2>
-        <p class="separator-sub">Investigación · Innovación · Ciencia</p>
-      </div>
-      <div class="separator-line"></div>
-    </div>
-  </section>
-
-  <!-- ========== ARTICLES FEED (3x3 Grid) ========== -->
-  <section class="articles-section" id="articulos">
-    <div class="articles-container">
-      <div class="section-header">
-        <h2 class="section-title">Últimos Artículos</h2>
-        <div class="category-filters" id="categoryFilters">
-          <button class="filter-btn active" data-category="all">Todos</button>
-        </div>
-      </div>
-      <div class="articles-grid" id="articlesGrid">
-        <!-- Populated by JS -->
-      </div>
-      <div class="articles-loader" id="articlesLoader">
-        <div class="loader-spinner"></div>
-        <p>Cargando artículos...</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========== EXTENSOR SECTION (Pre-footer CTA) ========== -->
-  <section class="extensor-section" id="extensor">
-    <div class="extensor-bg"></div>
-    <div class="extensor-content">
-      <span class="extensor-badge">UNACH</span>
-      <h2 class="extensor-title">Construyendo el futuro a través de la ciencia</h2>
-      <p class="extensor-text">La Dirección General de Investigación y Posgrado promueve la generación, difusión y aplicación del conocimiento científico y tecnológico</p>
-      <div class="extensor-actions">
-        <a href="http://www.dgip.unach.mx" class="btn-cta" target="_blank">
-          <i class="fas fa-arrow-right"></i> Conoce más sobre la DGIP
-        </a>
-        <a href="https://www.unach.mx" class="btn-cta-outline" target="_blank">
-          Visitar UNACH
-        </a>
-      </div>
-    </div>
-  </section>
+  </main>
 
   <!-- ========== FOOTER ========== -->
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-brand">
         <div class="footer-logo">
-          <i class="fas fa-atom"></i>
+          <img src="img/logo-unach-white.png" alt="Logo UNACH" width="40">
           <div>
-            <strong>DGIP — UNACH</strong>
-            <p>Dirección General de Investigación y Posgrado</p>
+            <strong>UNACH</strong>
+            <p>Divulgación de la Ciencia y el Conocimiento</p>
           </div>
         </div>
         <p class="footer-desc">Universidad Autónoma de Chiapas. Portal de divulgación científica al servicio de la comunidad universitaria y la sociedad.</p>
@@ -139,7 +79,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2026 Universidad Autónoma de Chiapas — Dirección General de Investigación y Posgrado</p>
+      <p>&copy; 2026 Universidad Autónoma de Chiapas — Divulgación de la Ciencia y el Conocimiento</p>
     </div>
   </footer>
 

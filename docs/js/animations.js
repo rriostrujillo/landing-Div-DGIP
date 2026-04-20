@@ -19,7 +19,7 @@ const Animations = {
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-    document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    document.querySelectorAll('.animate-reveal').forEach(el => observer.observe(el));
   },
 
   initHeaderScroll() {

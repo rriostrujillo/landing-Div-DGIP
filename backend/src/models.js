@@ -3,6 +3,7 @@ const Category = require('./modules/categories/category.model');
 const Post = require('./modules/posts/post.model');
 const Media = require('./modules/media/media.model');
 const Attachment = require('./modules/attachments/attachment.model');
+const Section = require('./modules/layout/section.model');
 
 // Post belongs to Category
 Post.belongsTo(Category, { foreignKey: 'category_id', as: 'category' });
@@ -23,4 +24,4 @@ Media.hasMany(Attachment, { foreignKey: 'media_id' });
 // Media belongs to User (uploader)
 Media.belongsTo(User, { foreignKey: 'uploaded_by', as: 'uploader' });
 
-module.exports = { User, Category, Post, Media, Attachment };
+module.exports = { User, Category, Post, Media, Attachment, Section };

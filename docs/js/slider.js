@@ -7,10 +7,17 @@ const Slider = {
   progressWidth: 0,
   progressInterval: null,
 
-  async init() {
-    const data = await Api.getFeatured();
+  async init(config = {}) {
+    const params = {
+      limit: config.limit_hero || 5,
+      category_id: config.category_id_hero
+    };
+    const data = await Api.getFeatured(params);
     this.slides = data.posts || [];
-    if (this.slides.length === 0) return;
+    if (this.slides.length === 0) {
+      document.getElementById('moduleHero').innerHTML = ''; // Hide if no slides
+      return;
+    }
     this.render();
     this.startAutoPlay();
     this.bindEvents();

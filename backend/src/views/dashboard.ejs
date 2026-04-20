@@ -28,25 +28,52 @@
   </div>
 </div>
 
-<div class="card">
-  <div class="card-header">
-    <h3>Artículos Recientes</h3>
-    <a href="/admin/posts/new" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nuevo</a>
+<div style="display:grid; grid-template-columns: 2fr 1fr; gap:24px;">
+  <div class="card">
+    <div class="card-header">
+      <h3>Artículos Recientes</h3>
+      <a href="/admin/posts/new" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Nuevo</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Título</th><th>Categoría</th><th>Vistas</th><th>Estado</th></tr></thead>
+        <tbody>
+        <% recentPosts.forEach(p => { %>
+          <tr>
+            <td><a href="/admin/posts/<%= p.id %>/edit" style="color:#192D63;font-weight:500;text-decoration:none;"><%= p.title.substring(0,40) %><%= p.title.length > 40 ? '...' : '' %></a></td>
+            <td><%= p.category ? p.category.name : '—' %></td>
+            <td><strong><%= p.views %></strong></td>
+            <td><span class="badge badge-<%= p.status %>"><%= p.status %></span></td>
+          </tr>
+        <% }) %>
+        </tbody>
+      </table>
+    </div>
   </div>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Título</th><th>Categoría</th><th>Estado</th><th>Fecha</th></tr></thead>
-      <tbody>
-      <% recentPosts.forEach(p => { %>
-        <tr>
-          <td><a href="/admin/posts/<%= p.id %>/edit" style="color:#192D63;font-weight:500;text-decoration:none;"><%= p.title.substring(0,60) %><%= p.title.length > 60 ? '...' : '' %></a></td>
-          <td><%= p.category ? p.category.name : '—' %></td>
-          <td><span class="badge badge-<%= p.status %>"><%= p.status %></span></td>
-          <td style="color:#64748b;font-size:0.85rem;"><%= p.created_at ? new Date(p.created_at).toLocaleDateString('es-MX') : '—' %></td>
-        </tr>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Impacto por Categoría</h3>
+      <a href="/admin/stats/export" class="btn btn-outline btn-sm" title="Descargar CSV"><i class="fas fa-download"></i> Informe</a>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px; margin-top:8px;">
+      <% categoryStats.forEach(cat => { %>
+        <div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.85rem;">
+            <span style="font-weight:600; color:var(--azul);"><%= cat.name %></span>
+            <span style="color:var(--gray);"><%= cat.get('total_views') || 0 %> vistas</span>
+          </div>
+          <div style="height:8px; background:#f1f5f9; border-radius:4px; overflow:hidden;">
+            <% 
+              const maxViews = Math.max(...categoryStats.map(c => c.get('total_views') || 1));
+              const percent = ((cat.get('total_views') || 0) / maxViews) * 100;
+            %>
+            <div style="width:<%= percent %>%; height:100%; background:<%= cat.color %>; border-radius:4px;"></div>
+          </div>
+          <div style="font-size:0.75rem; color:var(--gray); margin-top:4px;"><%= cat.get('post_count') %> artículos</div>
+        </div>
       <% }) %>
-      </tbody>
-    </table>
+    </div>
   </div>
 </div>
 

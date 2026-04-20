@@ -127,11 +127,14 @@ exports.deletePost = async (req, res) => {
 // Get published posts (API)
 exports.apiGetPosts = async (req, res) => {
   try {
-    const { limit = 9, offset = 0, category, status } = req.query;
+    const { limit = 9, offset = 0, category, category_id, status } = req.query;
     const where = { status: status || { [Op.in]: ['published', 'featured'] } };
+    
     if (category) {
       const cat = await Category.findOne({ where: { slug: category } });
       if (cat) where.category_id = cat.id;
+    } else if (category_id && category_id !== 'undefined' && category_id !== '') {
+      where.category_id = category_id;
     }
 
     const { count, rows } = await Post.findAndCountAll({

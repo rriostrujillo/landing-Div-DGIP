@@ -32,6 +32,42 @@ async function seed() {
     await Category.bulkCreate(cats);
     console.log('✅ Categories created');
 
+    // Create initial layout sections
+    const { Section } = require('../models');
+    const sections = [
+      { 
+        title: 'Carrusel Principal', 
+        type: 'hero_slider', 
+        config: JSON.stringify({ limit: 5 }), 
+        sort_order: 1 
+      },
+      { 
+        title: 'Separador Ciencia', 
+        type: 'separator', 
+        config: JSON.stringify({ icon: 'fas fa-flask', text: 'Divulgación del Conocimiento', sub: 'Investigación · Innovación · Ciencia' }), 
+        sort_order: 2 
+      },
+      { 
+        title: 'Feed de Noticias', 
+        type: 'articles_feed', 
+        config: JSON.stringify({ limit: 9, category_id: null, layout: 'grid' }), 
+        sort_order: 3 
+      },
+      { 
+        title: 'Banner UNACH', 
+        type: 'banner_horizontal', 
+        config: JSON.stringify({ 
+          title: 'Construyendo el futuro a través de la ciencia', 
+          text: 'La Dirección General de Investigación y Posgrado promueve la generación, difusión y aplicación del conocimiento científico y tecnológico',
+          button_text: 'Conoce más sobre la DGIP',
+          button_link: 'http://www.dgip.unach.mx'
+        }), 
+        sort_order: 4 
+      }
+    ];
+    await Section.bulkCreate(sections);
+    console.log('✅ Initial layout sections created');
+
     console.log('\n🎉 Seed complete! Login with: admin / admin123');
     process.exit(0);
   } catch (err) {

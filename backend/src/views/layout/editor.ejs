@@ -1,0 +1,263 @@
+<%- include('../header', { 
+  pageTitle: (mode === 'edit' ? 'Editar' : 'Nuevo') + ' Módulo de Portada',
+  extraHead: '<link rel="stylesheet" href="/admin/assets/editor.css">'
+}) %>
+
+<div class="editor-header">
+  <a href="/admin/layout" class="btn btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Volver</a>
+</div>
+
+<form method="POST" action="/admin/layout/<%= mode === 'edit' ? section.id + '/edit' : 'new' %>" id="layoutForm">
+  <div class="editor-grid" style="display:grid; grid-template-columns: 1fr 300px; gap: 24px; margin-top: 20px;">
+    <div class="editor-main">
+      <div class="card">
+        <div class="form-group">
+          <label>Título del Módulo (Referencia interna)</label>
+          <input type="text" name="title" required value="<%= section ? section.title : '' %>" placeholder="Ej: Feed de noticias secundaria">
+        </div>
+        
+        <div class="form-group">
+          <label>Tipo de Módulo</label>
+          <select name="type" id="typeSelect" onchange="toggleConfigFields()">
+            <option value="articles_feed" <%= section && section.type === 'articles_feed' ? 'selected' : '' %>>Feed de Artículos (Grid)</option>
+            <option value="banner_horizontal" <%= section && section.type === 'banner_horizontal' ? 'selected' : '' %>>Banner Horizontal (CTA)</option>
+            <option value="hero_slider" <%= section && section.type === 'hero_slider' ? 'selected' : '' %>>Carrusel Superior (Hero)</option>
+            <option value="html_custom" <%= section && section.type === 'html_custom' ? 'selected' : '' %>>Bloque HTML Personalizado</option>
+            <option value="separator" <%= section && section.type === 'separator' ? 'selected' : '' %>>Separador con Icono</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card" id="configCard">
+        <h3>Configuración Específica</h3>
+        <p style="font-size: 0.8rem; color: var(--gray); margin-bottom: 20px;">Define los parámetros de este módulo según su tipo.</p>
+        
+        <% 
+          let config = {};
+          if (section && section.config) {
+            try {
+              config = typeof section.config === 'string' ? JSON.parse(section.config) : section.config;
+            } catch(e) { config = {}; }
+          }
+        %>
+
+        <!-- Articles Feed Config -->
+        <div id="config-articles_feed" class="config-group">
+          <div class="form-group">
+            <label>Título Visible en la Web</label>
+            <input type="text" name="title_visible" value="<%= config.title_visible || config.title || '' %>" placeholder="Ej: Últimas Investigaciones">
+          </div>
+          <div class="form-group">
+            <label>Filtrar por Categoría</label>
+            <select name="category_id">
+              <option value="">Todas las categorías</option>
+              <% categories.forEach(c => { %>
+                <option value="<%= c.id %>" <%= config.category_id == c.id ? 'selected' : '' %>><%= c.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Cantidad de artículos a mostrar</label>
+            <input type="number" name="limit" value="<%= config.limit || 3 %>">
+          </div>
+        </div>
+
+        <!-- Banner Config -->
+        <div id="config-banner_horizontal" class="config-group" style="display:none;">
+          <div class="form-group">
+            <label>Título del Banner</label>
+            <input type="text" name="title_banner" value="<%= config.title_banner || config.title || '' %>">
+          </div>
+          
+          <div class="form-group">
+            <label>Texto Descriptivo (Editor)</label>
+            <div class="editor-toolbar" style="border-radius:8px 8px 0 0; margin-top:8px;">
+              <button type="button" class="toolbar-btn" title="Limpiar Formato" onclick="execCmd('removeFormat', null, 'bannerEditor')"><i class="fas fa-eraser"></i></button>
+              <button type="button" class="toolbar-btn" title="Lista Numerada" onclick="execCmd('insertOrderedList', null, 'bannerEditor')"><i class="fas fa-list-ol"></i></button>
+              <button type="button" class="toolbar-btn" title="Media" onclick="openMediaModal('bannerEditor')"><i class="fas fa-image"></i></button>
+              <button type="button" class="toolbar-btn" title="Insertar Embed" onclick="insertEmbed('bannerEditor')"><i class="fas fa-code"></i></button>
+            </div>
+            <div id="bannerEditor" contenteditable="true" class="editor-content" style="min-height:150px; border-radius:0 0 8px 8px; background:#fff;">
+              <%- config.text || '' %>
+            </div>
+            <input type="hidden" name="text" id="bannerInput">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Texto del Botón</label>
+              <input type="text" name="button_text" value="<%= config.button_text || '' %>">
+            </div>
+            <div class="form-group">
+              <label>Link del Botón</label>
+              <input type="text" name="button_link" value="<%= config.button_link || '' %>">
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Slider Config -->
+        <div id="config-hero_slider" class="config-group" style="display:none;">
+          <div class="form-group">
+            <label>Filtrar por Categoría (Carrusel)</label>
+            <select name="category_id_hero">
+              <option value="">Todas las categorías (solo Destacados)</option>
+              <% categories.forEach(c => { %>
+                <option value="<%= c.id %>" <%= config.category_id_hero == c.id ? 'selected' : '' %>><%= c.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Límite de destacados</label>
+            <input type="number" name="limit_hero" value="<%= config.limit_hero || config.limit || 5 %>">
+          </div>
+          <p style="font-size:0.85rem; color:var(--gray);">El carrusel muestra automáticamente los artículos marcados como "Destacados" en la categoría elegida.</p>
+        </div>
+
+        <!-- HTML Custom Config -->
+        <div id="config-html_custom" class="config-group" style="display:none;">
+          <div class="form-group">
+            <label>Contenido HTML</label>
+            <div class="editor-toolbar" style="border-radius:8px 8px 0 0; margin-top:8px;">
+              <button type="button" class="toolbar-btn" onclick="openHtmlModal('htmlEditor')"><i class="fas fa-code"></i> Editar HTML</button>
+              <button type="button" class="toolbar-btn" onclick="openMediaModal('htmlEditor')"><i class="fas fa-image"></i> Insertar Imagen</button>
+              <button type="button" class="toolbar-btn" title="Vista Previa" onclick="previewPost('htmlEditor')"><i class="fas fa-eye"></i> Vista Previa</button>
+            </div>
+            <div id="htmlEditor" contenteditable="true" class="editor-content" style="min-height:300px; border-radius:0 0 8px 8px; background:#fff; font-family:inherit;">
+              <%- config.html_content || config.html || '' %>
+            </div>
+            <input type="hidden" name="html_content" id="htmlInput">
+          </div>
+        </div>
+
+        <!-- Separator Config -->
+        <div id="config-separator" class="config-group" style="display:none;">
+          <div class="form-group">
+            <label>Icono (Clase de FontAwesome)</label>
+            <input type="text" name="icon" value="<%= config.icon || 'fas fa-flask' %>" placeholder="Ej: fas fa-atom">
+          </div>
+          
+          <div class="form-group">
+            <label>Texto Principal (Editor)</label>
+            <div class="editor-toolbar" style="border-radius:8px 8px 0 0; margin-top:8px;">
+              <button type="button" class="toolbar-btn" onclick="execCmd('bold', null, 'sepEditor')"><i class="fas fa-bold"></i></button>
+              <button type="button" class="toolbar-btn" onclick="execCmd('justifyCenter', null, 'sepEditor')"><i class="fas fa-align-center"></i></button>
+            </div>
+            <div id="sepEditor" contenteditable="true" class="editor-content" style="min-height:80px; border-radius:0 0 8px 8px; background:#fff;">
+              <%- config.text_sep || config.text || '' %>
+            </div>
+            <input type="hidden" name="text_sep" id="sepInput">
+          </div>
+
+          <div class="form-group">
+            <label>Subtexto (Opcional)</label>
+            <input type="text" name="sub_sep" value="<%= config.sub_sep || config.sub || '' %>">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="editor-sidebar">
+      <div class="card">
+        <h3>Publicación</h3>
+        <div class="form-group">
+          <label>Posición en la Página</label>
+          <select name="position">
+            <option value="full" <%= section && section.position === 'full' ? 'selected' : '' %>>Ancho Completo (Main)</option>
+            <option value="left" <%= section && section.position === 'left' ? 'selected' : '' %>>Columna Izquierda (Sidebar)</option>
+            <option value="right" <%= section && section.position === 'right' ? 'selected' : '' %>>Columna Derecha (Sidebar)</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-top:20px;">
+          <label>Orden de Aparición</label>
+          <input type="number" name="sort_order" value="<%= section ? section.sort_order : 0 %>" style="font-size:1.2rem; font-weight:bold; text-align:center;">
+        </div>
+        <div class="form-group" style="margin-top:20px;">
+          <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+            <input type="checkbox" name="is_active" <%= !section || section.is_active ? 'checked' : '' %> style="width:auto;"> 
+            <span>Módulo Activo</span>
+          </label>
+        </div>
+        <hr style="margin:20px 0; border:none; border-top:1px solid #eee;">
+        <button type="submit" class="btn btn-primary btn-block" style="justify-content:center;">
+          <i class="fas fa-save"></i> Guardar Cambios
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- Media Picker Modal -->
+<div class="modal-overlay" id="mediaModal">
+  <div class="card" style="max-width:800px; width:90%; max-height:80vh; overflow-y:auto; position:relative;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="margin:0;">Seleccionar Imagen</h2>
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeMediaModal()">&times;</button>
+    </div>
+    <div class="media-grid" id="mediaGrid">
+      <!-- Loaded via JS -->
+    </div>
+  </div>
+</div>
+
+<script src="/admin/assets/editor.js"></script>
+<script>
+function toggleConfigFields() {
+  const type = document.getElementById('typeSelect').value;
+  document.querySelectorAll('.config-group').forEach(el => el.style.display = 'none');
+  const activeGroup = document.getElementById('config-' + type);
+  if (activeGroup) activeGroup.style.display = 'block';
+}
+
+// Sync content before submit
+document.getElementById('layoutForm').addEventListener('submit', function(e) {
+  const type = document.getElementById('typeSelect').value;
+  if (type === 'banner_horizontal') {
+    document.getElementById('bannerInput').value = document.getElementById('bannerEditor').innerHTML;
+  } else if (type === 'separator') {
+    document.getElementById('sepInput').value = document.getElementById('sepEditor').innerHTML;
+  } else if (type === 'html_custom') {
+    document.getElementById('htmlInput').value = document.getElementById('htmlEditor').innerHTML;
+  }
+});
+
+document.addEventListener('DOMContentLoaded', toggleConfigFields);
+</script>
+<style>
+.config-group { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+.editor-toolbar { background: #f8fafc; border: 2px solid #e2e8f0; border-bottom: none; display: flex; gap: 4px; padding: 6px; }
+.toolbar-btn { padding: 4px 8px; background: none; border: 1px solid transparent; border-radius: 4px; cursor: pointer; color: #475569; font-size: 0.85rem; }
+.toolbar-btn:hover { background: #e2e8f0; color: var(--azul); }
+</style>
+
+<!-- HTML Source Modal -->
+<div class="modal-overlay" id="htmlModal">
+  <div class="card" style="max-width:800px; width:95%; max-height:85vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
+    <div class="card-header" style="padding:16px 24px; border-bottom:1px solid #e2e8f0; margin-bottom:0;">
+      <h3 style="margin:0;"><i class="fas fa-code"></i> Editar HTML</h3>
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeHtmlModal()">&times;</button>
+    </div>
+    <div style="flex:1; padding:20px;">
+      <textarea id="htmlEditorTextarea" style="width:100%; height:350px; font-family:monospace; font-size:13px; padding:12px; border:2px solid #e2e8f0; border-radius:8px; outline:none; resize:none;"></textarea>
+    </div>
+    <div style="padding:16px 24px; border-top:1px solid #e2e8f0; display:flex; justify-content:flex-end; gap:12px;">
+      <button type="button" class="btn btn-outline" onclick="closeHtmlModal()">Cancelar</button>
+      <button type="button" class="btn btn-primary" onclick="saveHtml()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal-overlay" id="previewModal">
+  <div class="card" style="max-width:1000px; width:95%; height:90vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
+    <div class="card-header" style="padding:16px 24px; border-bottom:1px solid #e2e8f0; margin-bottom:0;">
+      <h3 style="margin:0;"><i class="fas fa-eye"></i> Vista Previa del Módulo</h3>
+      <button type="button" class="btn btn-outline btn-sm" onclick="closePreviewModal()">&times;</button>
+    </div>
+    <div id="previewModalBody" style="flex:1; overflow-y:auto; background:#f4f5f7; padding:0;">
+      <!-- Content injected via JS -->
+    </div>
+  </div>
+</div>
+
+<%- include('../footer') %>
